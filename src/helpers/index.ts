@@ -36,7 +36,7 @@ export const convertToFormSelect = (
   return [{ label: 'None', value: '' }, ...list];
 };
 
-export const convertNumberToMoney = (amount: string, locale: string, currency: string) => {
+export const convertNumberToMoney = (amount: string, locale: string = 'vi', currency: string = 'vnd') => {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currency,
@@ -47,13 +47,13 @@ export const convertNumberToMoney = (amount: string, locale: string, currency: s
   }).format(parseInt(amount));
 }
 
-export const queryParamsToJsonObject =  ()=> {
+export const queryParamsToJsonObject = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlParams);
   return params;
 }
 
-export const getExpDate = () : Date =>{
+export const getExpDate = (): Date => {
   let now = new Date();
-  return new Date(now.getTime() + (EXP_MINUTE*60*1000));
+  return new Date(now.getTime() + (EXP_MINUTE * 60 * 1000));
 }

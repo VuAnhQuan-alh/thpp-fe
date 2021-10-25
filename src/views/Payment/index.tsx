@@ -26,8 +26,6 @@ const PaymentPage: React.FC = () => {
   const { data: requestParams } = GetValidateAccessSelector();
   const now = new Date();
 
-  console.log('a', JSON.stringify(requestParams));
-
   // gateway list state
   const { data: gatewayListData, loading: gatewayLoading, error: gatewayListerror } = GetGatewayPaymentsSelector();
 
@@ -69,16 +67,9 @@ const PaymentPage: React.FC = () => {
 
 
   /// CATCH DIRECT URL FROM PAYMENT METHOD -> PUSH TO NEW URL
-  // console.log('Url: ', createTransResponse);
   if (createTransResponse.data?.data != null) {
     window.parent.location.href = createTransResponse.data.data.paymentData;
   }
-
-  // return (
-  //   <div>
-  //     DATA
-  //   </div>
-  // );
 
   const onChange = (e: any) => {
     setValue(e.target.value);
