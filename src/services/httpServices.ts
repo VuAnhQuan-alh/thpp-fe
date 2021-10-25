@@ -7,14 +7,15 @@ class Services {
   constructor() {
     this.axios = axios;
     this.interceptors = null;
-    this.axios.defaults.withCredentials = true;
+    this.axios.defaults.withCredentials = false;
   }
 
   attachTokenToHeader(token: string) {
     this.interceptors = this.axios.interceptors.request.use(
       function (config: any) {
         // Do something before request is sent
-        config.headers.sessionId = token;
+        config.headers.Authorization = token;
+        config.headers.Accept = '*/*';
         return config;
       },
       function (error: any) {

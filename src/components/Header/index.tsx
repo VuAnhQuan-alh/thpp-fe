@@ -1,13 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import 'antd/dist/antd.css';
+import { PageHeader } from 'antd';
 
 const Header: React.FC = (props) => {
   return (
-    <div className="header">
-      <Link to="/">Home</Link>
-      <Link to="/login">Login</Link>
-      <Link to="/dashboard">Dashboard</Link>
-    </div>
+    <PageHeader
+      className="header"
+      onBack={() => null}
+      backIcon={false}
+      title="True Hope"
+      subTitle="Cổng thanh toán True Hope"
+    />
   );
 };
 

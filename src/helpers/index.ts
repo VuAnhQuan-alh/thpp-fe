@@ -1,3 +1,4 @@
+import { EXP_MINUTE } from 'constants/configConstants';
 import { List } from 'interfaces';
 
 export const convertToFormSelect = (
@@ -34,3 +35,25 @@ export const convertToFormSelect = (
   }
   return [{ label: 'None', value: '' }, ...list];
 };
+
+export const convertNumberToMoney = (amount: string, locale: string, currency: string) => {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+
+    // These options are needed to round to whole numbers if that's what you want.
+    //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+    //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+  }).format(parseInt(amount));
+}
+
+export const queryParamsToJsonObject =  ()=> {
+  const urlParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlParams);
+  return params;
+}
+
+export const getExpDate = () : Date =>{
+  let now = new Date();
+  return new Date(now.getTime() + (EXP_MINUTE*60*1000));
+}
