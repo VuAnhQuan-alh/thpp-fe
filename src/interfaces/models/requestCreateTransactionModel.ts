@@ -1,4 +1,5 @@
 import { getExpDate } from "helpers";
+import { RouteBase } from "routes/routeUrl";
 
 const PC_WINDOW_TYPE = '0';
 const MOBILE_WINDOW_TYPE = '1';
@@ -57,9 +58,11 @@ export class RequestCreateTransactionModel extends Object {
     }
 
     setAdditionalFields(gatewayCode: string) {
-        this.returnUrl = "http://localhost:3001/transaction/return";
-        this.againLink = "http://localhost:3001/transaction/return";
-        this.cancelUrl = "http://localhost:3001/transaction/return";
+        const returnURL = `${window.location.origin}${RouteBase.Return}`;
+
+        this.returnUrl = returnURL;
+        this.againLink = returnURL;
+        this.cancelUrl = returnURL;
         this.gatewayCode = gatewayCode;
 
         this.description = this.customerName + ' ' + this.serviceName?.toLowerCase() + ' ' + this.hospitalName?.toLowerCase();
