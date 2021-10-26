@@ -15,9 +15,16 @@ export const CreateTransactionSelector = () => {
 };
 
 export const GetDetailTransactionSelector = () => {
-    const createTransactionResponse = useSelector((state: any) => state.getDetailTransactionReducer.detailTransaction);
+    const detailTransaction = useSelector((state: any) => state.getDetailTransactionReducer.detailTransaction);
 
-    return createTransactionResponse;
+    return detailTransaction;
+
+};
+
+export const GetCustomerTransactionSelector = () => {
+    const customerTransaction = useSelector((state: any) => state.getCustomerTransactionReducer.customerTransaction);
+
+    return customerTransaction;
 
 };
 

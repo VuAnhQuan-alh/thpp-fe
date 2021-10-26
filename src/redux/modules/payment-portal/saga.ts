@@ -8,16 +8,31 @@ import {
     createTransactionSuccess,
     createTransactionFailed,
     getDetailTransactionSuccess,
-    getDetailTransactionFailed
+    getDetailTransactionFailed,
+    getCustomerTransactionSuccess
 } from './actions';
 import { ResponseGenerator } from 'interfaces';
 import { DetailTransactionModel } from 'interfaces/models/detailTransactionModel';
+
+/// get customer transaction
+function* getCustomerTransactionServiceSaga(action: any) {
+    try {
+        const response: ResponseGenerator = yield call(() => paymentPortalServices.getCustomerTransaction(action.payload));
+        yield put(getCustomerTransactionSuccess(response.data));
+    } catch (error) {
+        yield put({ type: types.GET_CUSTOMER_TRANSACTION_FAILED, error });
+    }
+}
+
+export function* getCustomerTransactionSaga() {
+    yield takeLatest(types.GET_CUSTOMER_TRANSACTION, getCustomerTransactionServiceSaga);
+}
+
 
 /// get gateway payment list 
 function* getGatewayPaymentListSaga(action: Action) {
     try {
         const response: ResponseGenerator = yield call(paymentPortalServices.getGatewayPayments);
-        console.log(response);
         yield put(getGatewayPaymentListSuccess(response.data));
     } catch (error) {
         yield put({ type: types.GET_DETAIL_TRANSACTION_FAILED, error });
@@ -32,7 +47,6 @@ export function* gatewayPaymentsSaga() {
 function* createTransactionServiceSaga(action: any) {
     try {
         const response: ResponseGenerator = yield call(() => paymentPortalServices.createTransaction(action.payload));
-        console.log(response);
         yield put(createTransactionSuccess(response.data));
     } catch (error) {
         console.log(error);
@@ -49,7 +63,6 @@ export function* createTransactionSaga() {
 function* getDetailTransactionServiceSaga(action: any) {
     try {
         const response: ResponseGenerator = yield call(() => paymentPortalServices.getDetailTransaction(action.payload));
-        console.log(response);
         switch (response.data.code) {
             case '0':
                 yield put(getDetailTransactionSuccess(Object.assign(new DetailTransactionModel(), response.data?.data)));

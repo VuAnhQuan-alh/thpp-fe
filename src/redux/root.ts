@@ -1,3 +1,4 @@
+import { getCustomerTransactionReducer } from './modules/payment-portal/reducer';
 import { combineReducers } from 'redux';
 import { all, spawn, call } from 'redux-saga/effects';
 
@@ -7,7 +8,8 @@ import {
   getDetailTransactionSaga,
   gatewayPaymentsReducer,
   createTransactionReducer,
-  getDetailTransactionReducer
+  getDetailTransactionReducer,
+  getCustomerTransactionSaga
 } from './modules/payment-portal';
 
 import { validAccessReducer } from './modules/validate-access';
@@ -16,7 +18,8 @@ export function* rootSagas() {
   const sagas = [
     gatewayPaymentsSaga,
     createTransactionSaga,
-    getDetailTransactionSaga
+    getDetailTransactionSaga,
+    getCustomerTransactionSaga
   ];
 
   yield all(
@@ -39,5 +42,6 @@ export const rootReducers = combineReducers({
   validAccessReducer,
   gatewayPaymentsReducer,
   createTransactionReducer,
-  getDetailTransactionReducer
+  getDetailTransactionReducer,
+  getCustomerTransactionReducer
 });

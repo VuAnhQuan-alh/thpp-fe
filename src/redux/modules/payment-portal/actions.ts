@@ -1,6 +1,23 @@
 import * as types from 'redux/types';
 import { DetailTransactionModel } from 'interfaces/models/detailTransactionModel';
 
+// get customer transaction info
+export const getCustomerTransaction = (transId: string) => ({
+    type: types.GET_CUSTOMER_TRANSACTION,
+    payload: transId
+});
+
+export const getCustomerTransactionSuccess = (payload: any) => ({
+    type: types.GET_CUSTOMER_TRANSACTION_SUCCESS,
+    payload,
+});
+
+export const getCustomerTransactionFailed = (error: any) => ({
+    type: types.GET_CUSTOMER_TRANSACTION_FAILED,
+    payload: error,
+});
+
+
 // get payment portal
 export const getGatewayPaymentList = () => ({
     type: types.REQUEST_LIST_GATEWAY
@@ -17,8 +34,7 @@ export const getGatewayPaymentListFailed = (payload: any) => ({
 });
 
 
-// create transaction
-
+/// create transaction
 export const createTransaction = (payload: any) => ({
     type: types.CREATE_TRANSACTION,
     payload

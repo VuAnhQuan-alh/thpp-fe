@@ -1,44 +1,70 @@
 import { Card, Radio, Space, Button, Form } from 'antd';
 import TextSpan from 'components/TextSpan';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Loading from 'components/Loading';
 import ErrorComponent from 'components/Errror';
 
 import { useDispatch } from 'react-redux';
-import { CreateTransactionSelector, GetGatewayPaymentsSelector } from 'redux/selectors';
+import { CreateTransactionSelector, GetCustomerTransactionSelector, GetGatewayPaymentsSelector } from 'redux/selectors';
 import { convertNumberToMoney } from 'helpers';
 
-import { createTransaction, getGatewayPaymentList } from 'redux/modules/payment-portal';
-import { useRouter } from 'hooks/useRoute';
+import { createTransaction, getCustomerTransaction, getGatewayPaymentList } from 'redux/modules/payment-portal';
 import { RequestCreateTransactionModel } from 'interfaces/models/requestCreateTransactionModel';
 import { GetValidateAccessSelector } from 'redux/selectors/validate-access';
-import cookieServices from 'services/cookieServices';
-import { RequestFromCustomerModel } from 'interfaces/models/requestFromCustomer';
-import { checkValidateAccess } from 'redux/modules/validate-access';
 
 
 const PaymentPage: React.FC = () => {
   // Get the router object
-  const router = useRouter();
   const dispatch = useDispatch();
 
+  var requestTransaction: RequestCreateTransactionModel;
+
   // request params state
-  const { data: requestParams } = GetValidateAccessSelector();
+  const { data: queryParams } = GetValidateAccessSelector();
   const now = new Date();
 
-  // gateway list state
-  const { data: gatewayListData, loading: gatewayLoading, error: gatewayListerror } = GetGatewayPaymentsSelector();
+  // customer transaction state
+  const {
+    loading: customerTransLoading,
+    data: customerTransData,
+    error: customerTransError
+  } = GetCustomerTransactionSelector();
 
-  const [value, setValue] = useState('');
+  // gateway list state
+  const {
+    data: gatewayListData,
+    loading: gatewayLoading,
+    error: gatewayListerror
+  } = GetGatewayPaymentsSelector();
+
+  const [gatewayCode, setGatewayCode] = useState('');
 
   // create transaction state
   const createTransResponse = CreateTransactionSelector();
 
-  useLayoutEffect(() => {
-    dispatch(getGatewayPaymentList());
-  }, [])
+  /// GET CUSTOMER TRANSACTION
+  useEffect(() => {
+    dispatch(getCustomerTransaction(queryParams.transactionId));
+  }, [queryParams])
+
+  /// GET GATEWAY PAYMENT LIST
+  useEffect(() => {
+    if (customerTransData) {
+      dispatch(getGatewayPaymentList());
+    }
+  }, [customerTransData])
 
   /// ----------------------------------------------------
+
+  if (customerTransLoading || gatewayLoading) {
+    return <Loading />;
+  }
+
+  if (gatewayListerror || customerTransError) {
+    return <ErrorComponent />;
+  }
+
+  requestTransaction = Object.assign(new RequestCreateTransactionModel(), customerTransData.data);
 
   // CREATE PAYMENT
   // Should show loading dialog when create payment
@@ -51,28 +77,13 @@ const PaymentPage: React.FC = () => {
     // return <ErrorComponent />;
   }
 
-
-  // ----------------------------------
-  // GET GATEWAY LIST
-
-  // Waiting gateway list
-  if (gatewayLoading) {
-    return <Loading />;
-  }
-
-  // Get gateway list error
-  if (gatewayListerror) {
-    return <ErrorComponent />;
-  }
-
-
   /// CATCH DIRECT URL FROM PAYMENT METHOD -> PUSH TO NEW URL
   if (createTransResponse.data?.data != null) {
     window.parent.location.href = createTransResponse.data.data.paymentData;
   }
 
   const onChange = (e: any) => {
-    setValue(e.target.value);
+    setGatewayCode(e.target.value);
   };
 
   /// Map gateway list to radio group
@@ -82,9 +93,9 @@ const PaymentPage: React.FC = () => {
 
   // SEND CREATE TRANSACTION REQUEST
   const onFinish = (values: any) => {
-    if (requestParams != null) {
-      requestParams.setAdditionalFields(value);
-      dispatch(createTransaction(requestParams.toJSON()));
+    if (requestTransaction != null) {
+      requestTransaction.setAdditionalFields(gatewayCode);
+      dispatch(createTransaction(requestTransaction.toJSON()));
     }
   };
 
@@ -98,15 +109,20 @@ const PaymentPage: React.FC = () => {
   return (
     <div className="page-content">
       <Card title="Thông tin thanh toán" bordered={false} style={{ width: 300 }}>
-        <TextSpan label="Khách hàng:" value={requestParams?.customerName} />
+        <TextSpan label="Khách hàng:" value={requestTransaction?.customerName} />
         <br />
-        <TextSpan label="Mã hóa đơn:" value={requestParams?.orderInfo} />
+        <TextSpan label="Mã hóa đơn:" value={requestTransaction?.orderInfo} />
         <br />
         <TextSpan label="Ngày hóa đơn:" value={now.toLocaleDateString()} />
         <br />
-        <TextSpan label="Sản phẩm/Dịch vụ:" value={requestParams?.serviceName} />
+        <TextSpan label="Sản phẩm/Dịch vụ:" value={requestTransaction?.serviceName} />
         <br />
-        <TextSpan label="Tổng tiền thanh toán:" value={convertNumberToMoney(requestParams?.amount!, requestParams?.locale!, requestParams?.currency!)} />
+        <TextSpan
+          label="Tổng tiền thanh toán:"
+          value={convertNumberToMoney(
+            requestTransaction?.amount!,
+            requestTransaction?.locale!,
+            requestTransaction?.currency!)} />
         <br />
       </Card>
 
@@ -126,7 +142,7 @@ const PaymentPage: React.FC = () => {
         >
           <Card title="Phương thức thanh toán" >
 
-            <Radio.Group onChange={onChange} value={value}>
+            <Radio.Group onChange={onChange} value={gatewayCode}>
               <Space direction="vertical">
                 {radioPayments}
               </Space>

@@ -2,6 +2,14 @@ import ReducerInterface from 'interfaces/reducerInterface';
 import produce from 'immer';
 import * as types from 'redux/types';
 
+const customerTransactionState = {
+    customerTransaction: {
+        data: null,
+        loading: false,
+        error: null,
+    }
+}
+
 const initialGatewayPaymentState = {
     gatewayPayments: {
         data: null,
@@ -25,6 +33,32 @@ const detailTransactionState = {
         error: null,
     },
 };
+
+
+// get getway payment list 
+export const getCustomerTransactionReducer = (state = customerTransactionState, action: ReducerInterface) => {
+    return produce(state, (draftState) => {
+        switch (action.type) {
+            case types.GET_CUSTOMER_TRANSACTION:
+                draftState.customerTransaction.loading = true;
+                break;
+
+            case types.GET_CUSTOMER_TRANSACTION_SUCCESS:
+                draftState.customerTransaction.loading = false;
+                draftState.customerTransaction.data = action.payload;
+                break;
+
+            case types.GET_CUSTOMER_TRANSACTION_FAILED:
+                draftState.customerTransaction.loading = false;
+                draftState.customerTransaction.error = action.error;
+                break;
+
+            default:
+                break;
+        }
+    });
+};
+
 
 
 // get getway payment list 
