@@ -132,7 +132,7 @@ const PaymentPage: React.FC = () => {
         onFinishFailed={onFinishFailed}
       >
         <Form.Item
-          name="gatewayPayment"ư
+          name="gatewayPayment"
           rules={[
             {
               required: true,
