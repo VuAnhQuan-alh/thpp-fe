@@ -21,8 +21,6 @@ const SplashPage = (props: any) => {
     }, []);
 
 
-    console.log('e', requestParams);
-
     if (requestParams == null && !(error === '')) {
         return <Redirect to={RouteBase.NotFound} />;
     }

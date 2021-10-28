@@ -9,18 +9,30 @@ import {
     createTransactionFailed,
     getDetailTransactionSuccess,
     getDetailTransactionFailed,
-    getCustomerTransactionSuccess
+    getCustomerTransactionSuccess,
+    getTransactionErrorSuccess,
+    getTransactionErrorFailed,
+    getCustomerTransactionFailed,
 } from './actions';
 import { ResponseGenerator } from 'interfaces';
 import { DetailTransactionModel } from 'interfaces/models/detailTransactionModel';
+import { mapErrorCodeStringToMsg, SUCCESS } from 'constants/errorCode';
 
 /// get customer transaction
 function* getCustomerTransactionServiceSaga(action: any) {
     try {
-        const response: ResponseGenerator = yield call(() => paymentPortalServices.getCustomerTransaction(action.payload));
-        yield put(getCustomerTransactionSuccess(response.data));
+        const response: ResponseGenerator
+            = yield call(() => paymentPortalServices.getCustomerTransaction(action.payload));
+
+        switch (response.data.code) {
+            case SUCCESS:
+                yield put(getCustomerTransactionSuccess(response.data));
+                break;
+            default:
+                yield put(getCustomerTransactionFailed(mapErrorCodeStringToMsg(response.data.message)));
+        }
     } catch (error) {
-        yield put({ type: types.GET_CUSTOMER_TRANSACTION_FAILED, error });
+        yield put(getCustomerTransactionFailed(error));
     }
 }
 
@@ -33,9 +45,16 @@ export function* getCustomerTransactionSaga() {
 function* getGatewayPaymentListSaga(action: Action) {
     try {
         const response: ResponseGenerator = yield call(paymentPortalServices.getGatewayPayments);
-        yield put(getGatewayPaymentListSuccess(response.data));
+
+        switch (response.data.code) {
+            case SUCCESS:
+                yield put(getGatewayPaymentListSuccess(response.data));
+                break;
+            default:
+                yield put(getGatewayPaymentListFailed(mapErrorCodeStringToMsg(response.data.message)));
+        }
     } catch (error) {
-        yield put({ type: types.GET_DETAIL_TRANSACTION_FAILED, error });
+        yield put(getGatewayPaymentListFailed(error));
     }
 }
 
@@ -47,9 +66,15 @@ export function* gatewayPaymentsSaga() {
 function* createTransactionServiceSaga(action: any) {
     try {
         const response: ResponseGenerator = yield call(() => paymentPortalServices.createTransaction(action.payload));
-        yield put(createTransactionSuccess(response.data));
+        switch (response.data.code) {
+            case SUCCESS:
+                yield put(createTransactionSuccess(response.data));
+                break;
+            default:
+                yield put(createTransactionFailed(mapErrorCodeStringToMsg(response.data.message)));
+        }
+
     } catch (error) {
-        console.log(error);
         yield put(createTransactionFailed(error));
     }
 }
@@ -64,19 +89,41 @@ function* getDetailTransactionServiceSaga(action: any) {
     try {
         const response: ResponseGenerator = yield call(() => paymentPortalServices.getDetailTransaction(action.payload));
         switch (response.data.code) {
-            case '0':
+            case SUCCESS:
                 yield put(getDetailTransactionSuccess(Object.assign(new DetailTransactionModel(), response.data?.data)));
                 break;
             default:
-                yield put(getDetailTransactionFailed(response.data.message));
+                yield put(getDetailTransactionFailed(mapErrorCodeStringToMsg(response.data.message)));
         }
 
     } catch (error) {
-        console.log(error);
         yield put(getDetailTransactionFailed(error));
     }
 }
 
 export function* getDetailTransactionSaga() {
     yield takeLatest(types.GET_DETAIL_TRANSACTION, getDetailTransactionServiceSaga);
+}
+
+
+
+/// GET TRANSACTION ERROR 
+function* getTransactionError(action: any) {
+    try {
+        const response: ResponseGenerator = yield call(() => paymentPortalServices.getTransactionError(action.payload));
+        switch (response.data.code) {
+            case SUCCESS:
+                yield put(getTransactionErrorSuccess(response.data?.data));
+                break;
+            default:
+                yield put(getTransactionErrorFailed(mapErrorCodeStringToMsg(response.data.message)));
+        }
+
+    } catch (error) {
+        yield put(getTransactionErrorFailed(error));
+    }
+}
+
+export function* getTransactionErrorSaga() {
+    yield takeLatest(types.GET_TRANSACTION_ERRROR, getTransactionError);
 }

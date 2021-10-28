@@ -66,3 +66,20 @@ export const getDetailTransactionFailed = (payload: any) => ({
     type: types.GET_DETAIL_TRANSACTION_FAILED,
     payload,
 });
+
+// get error transaction
+export const getTransactionError = (payload: any) => ({
+    type: types.GET_TRANSACTION_ERRROR,
+    payload
+});
+
+export const getTransactionErrorSuccess = (payload: any) => ({
+    type: types.GET_TRANSACTION_ERRROR_SUCCESS,
+    payload,
+});
+
+export const getTransactionErrorFailed = (payload: any) => ({
+    type: types.GET_TRANSACTION_ERRROR_FAILED,
+    payload,
+});
+

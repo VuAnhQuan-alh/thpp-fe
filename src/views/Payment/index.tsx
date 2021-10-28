@@ -74,6 +74,7 @@ const PaymentPage: React.FC = () => {
 
   // Should show error dialog when create payment has error
   if (createTransResponse.error) {
+    console.log('createTransResponse error', createTransResponse.error);
     // return <ErrorComponent />;
   }
 
@@ -96,6 +97,7 @@ const PaymentPage: React.FC = () => {
     if (requestTransaction != null) {
       requestTransaction.setAdditionalFields(gatewayCode);
       dispatch(createTransaction(requestTransaction.toJSON()));
+      // console.log(JSON.stringify(requestTransaction.toJSON()));
     }
   };
 

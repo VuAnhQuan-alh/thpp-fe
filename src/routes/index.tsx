@@ -14,11 +14,4 @@ export default [
     component: withErrorBoundary(PaymentPage),
     isPrivate: true,
   },
-  {
-    path: RouteBase.Return,
-    name: 'Return Transaction',
-    component: withErrorBoundary(ReturnTransactionPage),
-    isPrivate: true,
-  },
-  { name: RouteBase.NotFound, component: withErrorBoundary(Page404) },
 ];

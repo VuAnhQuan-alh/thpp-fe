@@ -57,3 +57,38 @@ export const getExpDate = (): Date => {
   let now = new Date();
   return new Date(now.getTime() + (EXP_MINUTE * 60 * 1000));
 }
+
+/**
+  match:
+    http://www.foufos.gr
+    https://www.foufos.gr
+    http://foufos.gr
+    http://www.foufos.gr/kino
+    http://werer.gr
+    www.foufos.gr
+    www.mp3.com
+    www.t.co
+    http://t.co
+    http://www.t.co
+    https://www.t.co
+    www.aa.com
+    http://aa.com
+    http://www.aa.com
+    https://www.aa.com
+
+  NOT match:
+    www.foufos
+    www.foufos-.gr
+    www.-foufos.gr
+    foufos.gr
+    http://www.foufos
+    http://foufos
+    www.mp3#.com
+ * 
+ */
+
+
+export const validateURL = (url: string) => {
+  var expression = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/;
+  return expression.test(url);
+}

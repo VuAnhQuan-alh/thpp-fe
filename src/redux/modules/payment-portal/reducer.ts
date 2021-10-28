@@ -28,7 +28,15 @@ const createTransactionState = {
 
 const detailTransactionState = {
     detailTransaction: {
-        data: [],
+        data: null,
+        loading: true,
+        error: null,
+    },
+};
+
+const transactionErrorState = {
+    transactionError: {
+        data: null,
         loading: true,
         error: null,
     },
@@ -50,7 +58,7 @@ export const getCustomerTransactionReducer = (state = customerTransactionState, 
 
             case types.GET_CUSTOMER_TRANSACTION_FAILED:
                 draftState.customerTransaction.loading = false;
-                draftState.customerTransaction.error = action.error;
+                draftState.customerTransaction.error = action.payload;
                 break;
 
             default:
@@ -76,7 +84,7 @@ export const gatewayPaymentsReducer = (state = initialGatewayPaymentState, actio
 
             case types.REQUEST_LIST_GATEWAY_FAILED:
                 draftState.gatewayPayments.loading = false;
-                draftState.gatewayPayments.error = action.error;
+                draftState.gatewayPayments.error = action.payload;
                 break;
 
             default:
@@ -101,7 +109,7 @@ export const createTransactionReducer = (state = createTransactionState, action:
 
             case types.CREATE_TRANSACTION_FAILED:
                 draftState.createTransactionResponse.loading = false;
-                draftState.createTransactionResponse.error = action.error;
+                draftState.createTransactionResponse.error = action.payload;
                 break;
 
             default:
@@ -126,7 +134,32 @@ export const getDetailTransactionReducer = (state = detailTransactionState, acti
 
             case types.GET_DETAIL_TRANSACTION_FAILED:
                 draftState.detailTransaction.loading = false;
-                draftState.detailTransaction.error = action.error;
+                draftState.detailTransaction.error = action.payload;
+                break;
+
+            default:
+                break;
+        }
+    });
+};
+
+
+// get transaction error
+export const getTransactionErrorReducer = (state = transactionErrorState, action: ReducerInterface) => {
+    return produce(state, (draftState) => {
+        switch (action.type) {
+            case types.GET_TRANSACTION_ERRROR:
+                draftState.transactionError.loading = true;
+                break;
+
+            case types.GET_TRANSACTION_ERRROR_SUCCESS:
+                draftState.transactionError.loading = false;
+                draftState.transactionError.data = action.payload;
+                break;
+
+            case types.GET_TRANSACTION_ERRROR_FAILED:
+                draftState.transactionError.loading = false;
+                draftState.transactionError.error = action.payload;
                 break;
 
             default:

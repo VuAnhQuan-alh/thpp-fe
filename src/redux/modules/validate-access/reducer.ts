@@ -1,3 +1,5 @@
+import { validateURL } from './../../../helpers/index';
+import { TOKEN_KEY, CALLBACK_URL } from './../../../services/cookieServices';
 import ReducerInterface from 'interfaces/reducerInterface';
 import * as types from 'redux/types';
 import { RequestFromCustomerModel } from 'interfaces/models/requestFromCustomer';
@@ -32,7 +34,10 @@ export const validAccessReducer = (state = validateAccessState, action: ReducerI
                     break;
                 }
 
-                cookieServices.setCookie('token', payload.token);
+                // save local data
+                cookieServices.setCookie(TOKEN_KEY, payload.token);
+                if (payload.callbackURL)
+                    cookieServices.setCookie(CALLBACK_URL, payload.callbackURL, false);
 
                 draftState.validateAccessData.data = action.payload;
                 draftState.validateAccessData.error = '';

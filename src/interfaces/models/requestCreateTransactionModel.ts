@@ -77,7 +77,7 @@ export class RequestCreateTransactionModel extends Object {
             customerName: this.customerName,
             phone: this.phone,
             orderInfo: this.orderInfo,
-            amount: this.amount,
+            amount: this.amount != null ? parseInt(this.amount).toString() : null,
             serviceCode: this.serviceCode,
             serviceName: this.serviceName,
             hospitalType: this.hospitalType != null ? parseInt(this.hospitalType.toString()) : null,

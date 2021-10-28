@@ -28,3 +28,10 @@ export const GetCustomerTransactionSelector = () => {
 
 };
 
+export const GetTransactionErrorSelector = () => {
+    const transactionError = useSelector((state: any) => state.getTransactionErrorReducer.transactionError);
+
+    return transactionError;
+
+};
+

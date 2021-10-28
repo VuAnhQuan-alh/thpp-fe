@@ -1,64 +1,84 @@
 import React, { useEffect } from 'react';
-import { queryParamsToJsonObject } from 'helpers';
 import { ReturnTransactionModel } from 'interfaces/models/returnTransactionModel';
 
 import { Result, Button } from 'antd';
 
 import { useDispatch } from 'react-redux';
-import { GetDetailTransactionSelector } from 'redux/selectors';
+import { GetDetailTransactionSelector, GetTransactionErrorSelector, GetValidateAccessSelector } from 'redux/selectors';
 import Loading from 'components/Loading';
 import ErrorComponent from 'components/Errror';
-import { getDetailTransaction } from 'redux/modules/payment-portal';
+import { getDetailTransaction, getTransactionError } from 'redux/modules/payment-portal';
 import TextSpan from 'components/TextSpan';
 import { useRouter } from 'hooks/useRoute';
-import { RequestCreateTransactionModel } from 'interfaces/models/requestCreateTransactionModel';
+import cookieServices, { CALLBACK_URL } from 'services/cookieServices';
+import { DetailTransactionModel } from 'interfaces/models/detailTransactionModel';
 
 
 const ReturnTransactionPage = (props: any) => {
+    const dispatch = useDispatch();
     const router = useRouter();
     let clientWithType = Object.assign(new ReturnTransactionModel(), router.query)
 
-    const dispatch = useDispatch();
-    const detailTransaction = GetDetailTransactionSelector();
+    const { data: transaction, error: transError, loading: transLoading } = GetDetailTransactionSelector();
+    const { data: transErrorData, error: transErrorFailed, loading: transErrorLoading } = GetTransactionErrorSelector();
 
-
+    // get detail transaction
     useEffect(() => {
-        // if (clientWithType.vnp_ResponseCode == '00') {
         dispatch(getDetailTransaction(clientWithType.vnp_TxnRef));
-        // }
     }, []);
 
+    // map error message
+    useEffect(() => {
+        if (transaction && !clientWithType.isSuccess()) {
+            dispatch(getTransactionError({
+                errorCode: clientWithType.vnp_ResponseCode,
+                gateway: transaction.gatewayCode
+            }));
+        }
 
-    if (detailTransaction.loading) {
+    }, [transaction]);
+
+    if (transLoading || transErrorLoading) {
         return <Loading />;
     }
 
-    if (detailTransaction.error) {
+    if (transError || transErrorFailed) {
         return <ErrorComponent />;
     }
 
+    const detailTransaction = Object.assign(new DetailTransactionModel(), transaction);
+
+    // navigator portal web to customer view by callback URL
+    const doneClicked = () => {
+        const callbackURL = cookieServices.getCookie(CALLBACK_URL);
+        window.parent.location.href
+            = `${callbackURL}?${clientWithType.toCallbackQueryParams(
+                detailTransaction.orderInfo,
+                transErrorData.description
+            )}`;
+    }
 
     return (
         <div>
             <Result
-                status={clientWithType.vnp_ResponseCode == '00' ? "success" : "error"}
-                title={detailTransaction.data.message}
+                status={clientWithType.isSuccess() ? "success" : "error"}
+                title={transErrorData.description}
                 extra={[
-                    <Button type="primary" key="console">
-                        Trở về
+                    <Button type="primary" key="console" onClick={doneClicked} >
+                        Hoàn thành
                     </Button>,
                 ]}
             >
                 <div style={{ alignContent: "center", justifyItems: "center", textAlign: "center" }}>
-                    <TextSpan label="Mã đơn hàng:" value={detailTransaction.data.orderInfo} />
+                    <TextSpan label="Mã đơn hàng:" value={detailTransaction.orderInfo} />
                     <br />
-                    <TextSpan label="Mã giao dịch:" value={detailTransaction.data.transactionNo} />
+                    <TextSpan label="Mã giao dịch:" value={detailTransaction.transactionNo} />
                     <br />
-                    <TextSpan label="Ngày giao dịch:" value={detailTransaction.data.payDate} />
+                    <TextSpan label="Ngày giao dịch:" value={detailTransaction.payDate} />
                     <br />
-                    <TextSpan label="Phương thức giao dịch:" value={detailTransaction.data.gatewayCode} />
+                    <TextSpan label="Phương thức giao dịch:" value={detailTransaction.gatewayCode} />
                     <br />
-                    <TextSpan label="Tổng tiền thanh toán:" value={detailTransaction.data.amount} />
+                    <TextSpan label="Tổng tiền thanh toán:" value={detailTransaction.amount} />
                     <br />
                 </div>
             </Result>
