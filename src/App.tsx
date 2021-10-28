@@ -17,7 +17,7 @@ const App: React.FC = () => {
       <Switch>
         <Route path={RouteBase.Splash} exact component={SplashPage} />
         <Route exact path={RouteBase.Payment} component={DefaultLayout} />
-        <Route exact path={RouteBase.Return} component={ReturnTransactionPage} />
+        <Route path={RouteBase.Return} component={ReturnTransactionPage} />
         <Route component={Page404} />
       </Switch>
     </Router>
