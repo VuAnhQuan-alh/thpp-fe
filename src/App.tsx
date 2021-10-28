@@ -15,10 +15,10 @@ const App: React.FC = () => {
   return (
     <Router>
       <Switch>
-        <Route path={RouteBase.Splash} exact component={SplashPage} />
         <Route exact path={RouteBase.Payment} component={DefaultLayout} />
         <Route path={RouteBase.Return} component={ReturnTransactionPage} />
-        <Route component={Page404} />
+        <Route path={RouteBase.Splash} exact component={SplashPage} />
+        <Route path="*" component={Page404} />
       </Switch>
     </Router>
   );

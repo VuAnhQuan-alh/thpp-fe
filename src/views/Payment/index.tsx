@@ -6,11 +6,13 @@ import ErrorComponent from 'components/Errror';
 
 import { useDispatch } from 'react-redux';
 import { CreateTransactionSelector, GetCustomerTransactionSelector, GetGatewayPaymentsSelector } from 'redux/selectors';
-import { convertNumberToMoney } from 'helpers';
+import { convertNumberToMoney, toCallbackQueryParams } from 'helpers';
 
 import { createTransaction, getCustomerTransaction, getGatewayPaymentList } from 'redux/modules/payment-portal';
 import { RequestCreateTransactionModel } from 'interfaces/models/requestCreateTransactionModel';
 import { GetValidateAccessSelector } from 'redux/selectors/validate-access';
+import cookieServices, { CALLBACK_URL } from 'services/cookieServices';
+import { ERROR_CUSTOMER_CANCEL, mapErrorCodeToMsg } from 'constants/errorCode';
 
 
 const PaymentPage: React.FC = () => {
@@ -106,6 +108,16 @@ const PaymentPage: React.FC = () => {
     // console.log('Failed:', errorInfo);
   };
 
+  const cancelTransaction = () => {
+    const callbackURL = cookieServices.getCookie(CALLBACK_URL);
+    window.parent.location.href
+      = `${callbackURL}?${toCallbackQueryParams(
+        ERROR_CUSTOMER_CANCEL,
+        requestTransaction.orderInfo,
+        mapErrorCodeToMsg(ERROR_CUSTOMER_CANCEL),
+      )}`;
+  }
+
 
   // Render
   return (
@@ -154,7 +166,7 @@ const PaymentPage: React.FC = () => {
         </Form.Item>
         <Form.Item>
           <div className="center" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
-            <Button type="primary" shape="round" size="large" className="ant-btn-red">
+            <Button type="primary" shape="round" size="large" className="ant-btn-red" onClick={cancelTransaction}>
               Hủy
             </Button>
 

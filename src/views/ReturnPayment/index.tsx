@@ -12,9 +12,10 @@ import TextSpan from 'components/TextSpan';
 import { useRouter } from 'hooks/useRoute';
 import cookieServices, { CALLBACK_URL } from 'services/cookieServices';
 import { DetailTransactionModel } from 'interfaces/models/detailTransactionModel';
+import { toCallbackQueryParams } from 'helpers';
 
 
-const ReturnTransactionPage = (props: any) => {
+const ReturnTransactionPage: React.FC = () => {
     const dispatch = useDispatch();
     const router = useRouter();
     let clientWithType = Object.assign(new ReturnTransactionModel(), router.query)
@@ -52,9 +53,10 @@ const ReturnTransactionPage = (props: any) => {
     const doneClicked = () => {
         const callbackURL = cookieServices.getCookie(CALLBACK_URL);
         window.parent.location.href
-            = `${callbackURL}?${clientWithType.toCallbackQueryParams(
+            = `${callbackURL}?${toCallbackQueryParams(
+                clientWithType.vnp_ResponseCode!,
                 detailTransaction.orderInfo,
-                transErrorData.description
+                transErrorData.description,
             )}`;
     }
 

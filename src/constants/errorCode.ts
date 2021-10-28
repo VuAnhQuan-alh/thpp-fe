@@ -1,4 +1,14 @@
 export const SUCCESS = "0"; // Thành
+export const ERROR_CUSTOMER_CANCEL = "24"; // Thành
+
+export const mapErrorCodeToMsg = (code: string) => {
+    switch (code) {
+        case ERROR_CUSTOMER_CANCEL:
+            return 'Khách hàng hủy giao dịch';
+        default:
+            return 'Đã xảy ra lỗi'
+    }
+}
 
 export const mapErrorCodeStringToMsg = (code: string) => {
     switch (code) {

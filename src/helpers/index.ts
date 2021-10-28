@@ -92,3 +92,13 @@ export const validateURL = (url: string) => {
   var expression = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/;
   return expression.test(url);
 }
+
+export const toCallbackQueryParams = (vnp_ResponseCode: string, transactionId: string = '', description: string = '') => {
+  const params = {
+    "vnp_ResponseCode": vnp_ResponseCode,
+    "transactionId": transactionId,
+    "description": description
+  };
+
+  return new URLSearchParams(params).toString();
+}
