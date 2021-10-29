@@ -1,23 +1,17 @@
 import { lazy } from 'react';
 import withErrorBoundary from 'components/HOCs/withErrorBoundary';
+import { RouteBase } from './routeUrl';
 
-const HomePage = lazy(() => import('views/Home'));
-const Dashboard = lazy(() => import('views/Dashboard'));
+const PaymentPage = lazy(() => import('views/Payment'));
+const ReturnTransactionPage = lazy(() => import('views/ReturnPayment'));
 const Page404 = lazy(() => import('views/Page404'));
 
 export default [
   {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: withErrorBoundary(Dashboard),
-    isPrivate: true,
-  },
-  {
-    path: '/',
+    path: RouteBase.Payment,
     exact: true,
-    name: 'Home',
-    component: withErrorBoundary(HomePage),
+    name: 'Payment',
+    component: withErrorBoundary(PaymentPage),
     isPrivate: true,
   },
-  { name: '404', component: withErrorBoundary(Page404) },
 ];
