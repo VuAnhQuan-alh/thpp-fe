@@ -5,7 +5,7 @@ import * as types from 'redux/types';
 const customerTransactionState = {
     customerTransaction: {
         data: null,
-        loading: false,
+        loading: true,
         error: null,
     }
 }
@@ -21,7 +21,7 @@ const initialGatewayPaymentState = {
 const createTransactionState = {
     createTransactionResponse: {
         data: null,
-        loading: true,
+        loading: false,
         error: null
     }
 };
@@ -29,7 +29,7 @@ const createTransactionState = {
 const detailTransactionState = {
     detailTransaction: {
         data: null,
-        loading: true,
+        loading: false,
         error: null,
     },
 };
@@ -37,7 +37,7 @@ const detailTransactionState = {
 const transactionErrorState = {
     transactionError: {
         data: null,
-        loading: true,
+        loading: false,
         error: null,
     },
 };
@@ -49,6 +49,7 @@ export const getCustomerTransactionReducer = (state = customerTransactionState, 
         switch (action.type) {
             case types.GET_CUSTOMER_TRANSACTION:
                 draftState.customerTransaction.loading = true;
+                draftState.customerTransaction.error = null;
                 break;
 
             case types.GET_CUSTOMER_TRANSACTION_SUCCESS:
@@ -75,6 +76,7 @@ export const gatewayPaymentsReducer = (state = initialGatewayPaymentState, actio
         switch (action.type) {
             case types.REQUEST_LIST_GATEWAY:
                 draftState.gatewayPayments.loading = true;
+                draftState.gatewayPayments.error = null;
                 break;
 
             case types.REQUEST_LIST_GATEWAY_SUCCESS:
@@ -100,6 +102,7 @@ export const createTransactionReducer = (state = createTransactionState, action:
         switch (action.type) {
             case types.CREATE_TRANSACTION:
                 draftState.createTransactionResponse.loading = true;
+                draftState.createTransactionResponse.error = null;
                 break;
 
             case types.CREATE_TRANSACTION_SUCCESS:
@@ -125,6 +128,7 @@ export const getDetailTransactionReducer = (state = detailTransactionState, acti
         switch (action.type) {
             case types.GET_DETAIL_TRANSACTION:
                 draftState.detailTransaction.loading = true;
+                draftState.detailTransaction.error = null;
                 break;
 
             case types.GET_DETAIL_TRANSACTION_SUCCESS:
@@ -150,6 +154,7 @@ export const getTransactionErrorReducer = (state = transactionErrorState, action
         switch (action.type) {
             case types.GET_TRANSACTION_ERRROR:
                 draftState.transactionError.loading = true;
+                draftState.transactionError.error = null;
                 break;
 
             case types.GET_TRANSACTION_ERRROR_SUCCESS:

@@ -4,9 +4,8 @@ import { ReturnTransactionModel } from 'interfaces/models/returnTransactionModel
 import { Result, Button } from 'antd';
 
 import { useDispatch } from 'react-redux';
-import { GetDetailTransactionSelector, GetTransactionErrorSelector, GetValidateAccessSelector } from 'redux/selectors';
+import { GetDetailTransactionSelector, GetTransactionErrorSelector } from 'redux/selectors';
 import Loading from 'components/Loading';
-import ErrorComponent from 'components/Errror';
 import { getDetailTransaction, getTransactionError } from 'redux/modules/payment-portal';
 import TextSpan from 'components/TextSpan';
 import { useRouter } from 'hooks/useRoute';
@@ -43,11 +42,12 @@ const ReturnTransactionPage: React.FC = () => {
         return <Loading />;
     }
 
-    if (transError || transErrorFailed) {
-        return <ErrorComponent />;
-    }
-
     const detailTransaction = Object.assign(new DetailTransactionModel(), transaction);
+
+    const getDescription = (): string => {
+        return clientWithType.isSuccess() ? 'Giao dịch thành công'
+            : transErrorData?.description ?? 'Đã xảy ra lỗi';
+    }
 
     // navigator portal web to customer view by callback URL
     const doneClicked = () => {
@@ -56,7 +56,7 @@ const ReturnTransactionPage: React.FC = () => {
             = `${callbackURL}?${toCallbackQueryParams(
                 clientWithType.vnp_ResponseCode!,
                 detailTransaction.orderInfo,
-                transErrorData.description,
+                getDescription(),
             )}`;
     }
 
@@ -64,7 +64,7 @@ const ReturnTransactionPage: React.FC = () => {
         <div>
             <Result
                 status={clientWithType.isSuccess() ? "success" : "error"}
-                title={transErrorData.description}
+                title={getDescription()}
                 extra={[
                     <Button type="primary" key="console" onClick={doneClicked} >
                         Hoàn thành

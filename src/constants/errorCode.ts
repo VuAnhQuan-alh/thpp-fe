@@ -1,5 +1,16 @@
-export const SUCCESS = "0"; // Thành
-export const ERROR_CUSTOMER_CANCEL = "24"; // Thành
+export const SUCCESS = "0"; // Thành công
+export const ERROR_CUSTOMER_CANCEL = "24";
+
+const UNAUTHENTICATED = 401;
+
+export const mapStatusCodeAPIToMsg = (code: any)=>{
+    switch (code) {
+        case UNAUTHENTICATED:
+            return 'Lỗi xác thực';
+        default:
+            return 'Đã xảy ra lỗi';
+    }
+}
 
 export const mapErrorCodeToMsg = (code: string) => {
     switch (code) {

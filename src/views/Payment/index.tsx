@@ -1,18 +1,22 @@
-import { Card, Radio, Space, Button, Form } from 'antd';
+
+import { useDispatch } from 'react-redux';
+import { Card, Radio, Space, Button, Form, Modal } from 'antd';
+import 'antd/dist/antd.css';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import TextSpan from 'components/TextSpan';
 import React, { useEffect, useState } from 'react';
 import Loading from 'components/Loading';
 import ErrorComponent from 'components/Errror';
 
-import { useDispatch } from 'react-redux';
 import { CreateTransactionSelector, GetCustomerTransactionSelector, GetGatewayPaymentsSelector } from 'redux/selectors';
 import { convertNumberToMoney, toCallbackQueryParams } from 'helpers';
-
 import { createTransaction, getCustomerTransaction, getGatewayPaymentList } from 'redux/modules/payment-portal';
 import { RequestCreateTransactionModel } from 'interfaces/models/requestCreateTransactionModel';
 import { GetValidateAccessSelector } from 'redux/selectors/validate-access';
 import cookieServices, { CALLBACK_URL } from 'services/cookieServices';
 import { ERROR_CUSTOMER_CANCEL, mapErrorCodeToMsg } from 'constants/errorCode';
+
+const { confirm } = Modal;
 
 
 const PaymentPage: React.FC = () => {
@@ -42,8 +46,14 @@ const PaymentPage: React.FC = () => {
   const [gatewayCode, setGatewayCode] = useState('');
 
   // create transaction state
-  const createTransResponse = CreateTransactionSelector();
+  const {
+    data: createTrans,
+    loading: createTransLoading,
+    error: createTransError
+  } = CreateTransactionSelector();
 
+
+  /// ----------------------------------------------------
   /// GET CUSTOMER TRANSACTION
   useEffect(() => {
     dispatch(getCustomerTransaction(queryParams.transactionId));
@@ -56,7 +66,18 @@ const PaymentPage: React.FC = () => {
     }
   }, [customerTransData])
 
+  useEffect(() => {
+    // Should show error dialog when create payment has error
+    if (createTransError) {
+      Modal.error({
+        title: 'Lỗi',
+        content: createTransError,
+      });
+    }
+  }, [createTransError])
+
   /// ----------------------------------------------------
+
 
   if (customerTransLoading || gatewayLoading) {
     return <Loading />;
@@ -66,23 +87,19 @@ const PaymentPage: React.FC = () => {
     return <ErrorComponent />;
   }
 
-  requestTransaction = Object.assign(new RequestCreateTransactionModel(), customerTransData.data);
-
   // CREATE PAYMENT
   // Should show loading dialog when create payment
-  if (createTransResponse.loading) {
+  if (createTransLoading) {
     // return <Loading />;
   }
 
-  // Should show error dialog when create payment has error
-  if (createTransResponse.error) {
-    console.log('createTransResponse error', createTransResponse.error);
-    // return <ErrorComponent />;
-  }
+
+  requestTransaction = Object.assign(new RequestCreateTransactionModel(), customerTransData.data);
+
 
   /// CATCH DIRECT URL FROM PAYMENT METHOD -> PUSH TO NEW URL
-  if (createTransResponse.data?.data != null) {
-    window.parent.location.href = createTransResponse.data.data.paymentData;
+  if (createTrans?.data != null) {
+    window.parent.location.href = createTrans.data.paymentData;
   }
 
   const onChange = (e: any) => {
@@ -99,23 +116,30 @@ const PaymentPage: React.FC = () => {
     if (requestTransaction != null) {
       requestTransaction.setAdditionalFields(gatewayCode);
       dispatch(createTransaction(requestTransaction.toJSON()));
-      // console.log(JSON.stringify(requestTransaction.toJSON()));
     }
   };
 
   // Valid radio group
-  const onFinishFailed = (errorInfo: any) => {
-    // console.log('Failed:', errorInfo);
-  };
+  const onFinishFailed = (errorInfo: any) => { };
 
   const cancelTransaction = () => {
-    const callbackURL = cookieServices.getCookie(CALLBACK_URL);
-    window.parent.location.href
-      = `${callbackURL}?${toCallbackQueryParams(
-        ERROR_CUSTOMER_CANCEL,
-        requestTransaction.orderInfo,
-        mapErrorCodeToMsg(ERROR_CUSTOMER_CANCEL),
-      )}`;
+    confirm({
+      title: 'Thông báo',
+      content: 'Bạn muốn hủy giao dịch này?',
+      icon: <ExclamationCircleOutlined />,
+      okText: 'Đồng ý',
+      okType: 'danger',
+      cancelText: 'Hủy bỏ',
+      onOk() {
+        const callbackURL = cookieServices.getCookie(CALLBACK_URL);
+        window.parent.location.href
+          = `${callbackURL}?${toCallbackQueryParams(
+            ERROR_CUSTOMER_CANCEL,
+            requestTransaction.orderInfo,
+            mapErrorCodeToMsg(ERROR_CUSTOMER_CANCEL),
+          )}`;
+      },
+    });
   }
 
 
