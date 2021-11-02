@@ -2,5 +2,6 @@ export const RouteBase = {
   Splash: '/',
   Payment: '/payment',
   Return: '/return',
-  NotFound: '/not-found'
+  NotFound: '/not-found',
+  Error: '/error'
 };

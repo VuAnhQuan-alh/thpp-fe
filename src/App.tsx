@@ -6,7 +6,6 @@ import './styles/scss/styles.scss';
 
 import ReturnTransactionPage from 'views/ReturnPayment';
 import Page404 from 'views/Page404';
-import PaymentPage from 'views/Payment';
 import SplashPage from 'views/Splash';
 import DefaultLayout from 'layout/DefaultLayout';
 

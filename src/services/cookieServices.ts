@@ -1,4 +1,6 @@
+import { ApiException } from './../constants/exception';
 import Cookies from 'universal-cookie';
+import { UNAUTHENTICATED } from 'constants/errorCode';
 class CookieServices {
     cookies = new Cookies();
 
@@ -15,7 +17,15 @@ class CookieServices {
     };
 
     getCookie(key: string) {
-        return this.cookies.get(key);
+        var cookie = this.cookies.get(key);
+        if (cookie == null) {
+            throw {
+                response: {
+                    status: UNAUTHENTICATED
+                }
+            };
+        }
+        return cookie;
     }
 }
 

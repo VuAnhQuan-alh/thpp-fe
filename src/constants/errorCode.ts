@@ -1,7 +1,7 @@
 export const SUCCESS = "0"; // Thành công
 export const ERROR_CUSTOMER_CANCEL = "24";
 
-const UNAUTHENTICATED = 401;
+export const UNAUTHENTICATED = 401;
 
 export const mapStatusCodeAPIToMsg = (code: any)=>{
     switch (code) {

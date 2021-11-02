@@ -79,12 +79,17 @@ const PaymentPage: React.FC = () => {
   /// ----------------------------------------------------
 
 
-  if (customerTransLoading || gatewayLoading) {
-    return <Loading />;
+  if (gatewayListerror) {
+    return <ErrorComponent message={gatewayListerror} />;
   }
 
-  if (gatewayListerror || customerTransError) {
-    return <ErrorComponent />;
+  if (customerTransError) {
+    return <ErrorComponent message={customerTransError} />;
+  }
+
+
+  if (customerTransLoading || gatewayLoading) {
+    return <Loading />;
   }
 
   // CREATE PAYMENT
@@ -92,7 +97,6 @@ const PaymentPage: React.FC = () => {
   if (createTransLoading) {
     // return <Loading />;
   }
-
 
   requestTransaction = Object.assign(new RequestCreateTransactionModel(), customerTransData.data);
 

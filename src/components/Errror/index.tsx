@@ -1,10 +1,12 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 
-const ErrorComponent: React.FC = (props) => {
+const ErrorComponent = (props: any) => {
+    const { message } = props;
+
     return (
         <div>
-            Error
+            Error: {message}
         </div>
     );
 };

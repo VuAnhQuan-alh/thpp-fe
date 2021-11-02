@@ -16,14 +16,13 @@ import {
 } from './actions';
 import { ResponseGenerator } from 'interfaces';
 import { DetailTransactionModel } from 'interfaces/models/detailTransactionModel';
-import { mapErrorCodeStringToMsg, SUCCESS } from 'constants/errorCode';
+import { mapErrorCodeStringToMsg, mapStatusCodeAPIToMsg, SUCCESS } from 'constants/errorCode';
 
 /// get customer transaction
 function* getCustomerTransactionServiceSaga(action: any) {
     try {
         const response: ResponseGenerator
             = yield call(() => paymentPortalServices.getCustomerTransaction(action.payload));
-
         switch (response.data.code) {
             case SUCCESS:
                 yield put(getCustomerTransactionSuccess(response.data));
@@ -32,6 +31,12 @@ function* getCustomerTransactionServiceSaga(action: any) {
                 yield put(getCustomerTransactionFailed(mapErrorCodeStringToMsg(response.data.message)));
         }
     } catch (error) {
+        var status = (error as any).response.status;
+        if (status) {
+            yield put(getCustomerTransactionFailed(mapStatusCodeAPIToMsg(status)));
+            return;
+        }
+
         yield put(getCustomerTransactionFailed(error));
     }
 }
@@ -54,6 +59,11 @@ function* getGatewayPaymentListSaga(action: Action) {
                 yield put(getGatewayPaymentListFailed(mapErrorCodeStringToMsg(response.data.message)));
         }
     } catch (error) {
+        var status = (error as any).response.status;
+        if (status) {
+            yield put(getGatewayPaymentListFailed(mapStatusCodeAPIToMsg(status)));
+            return;
+        }
         yield put(getGatewayPaymentListFailed(error));
     }
 }
@@ -75,6 +85,11 @@ function* createTransactionServiceSaga(action: any) {
         }
 
     } catch (error) {
+        var status = (error as any).response.status;
+        if (status) {
+            yield put(createTransactionFailed(mapStatusCodeAPIToMsg(status)));
+            return;
+        }
         yield put(createTransactionFailed(error));
     }
 }
@@ -97,6 +112,11 @@ function* getDetailTransactionServiceSaga(action: any) {
         }
 
     } catch (error) {
+        var status = (error as any).response.status;
+        if (status) {
+            yield put(getDetailTransactionFailed(mapStatusCodeAPIToMsg(status)));
+            return;
+        }
         yield put(getDetailTransactionFailed(error));
     }
 }
@@ -120,6 +140,11 @@ function* getTransactionError(action: any) {
         }
 
     } catch (error) {
+        var status = (error as any).response.status;
+        if (status) {
+            yield put(getTransactionErrorFailed(mapStatusCodeAPIToMsg(status)));
+            return;
+        }
         yield put(getTransactionErrorFailed(error));
     }
 }
