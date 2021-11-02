@@ -1,6 +1,6 @@
 
 import { useDispatch } from 'react-redux';
-import { Card, Radio, Space, Button, Form, Modal } from 'antd';
+import { Card, Radio, Space, Button, Form, Modal, Row, Table } from 'antd';
 import 'antd/dist/antd.css';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import TextSpan from 'components/TextSpan';
@@ -9,7 +9,7 @@ import Loading from 'components/Loading';
 import ErrorComponent from 'components/Errror';
 
 import { CreateTransactionSelector, GetCustomerTransactionSelector, GetGatewayPaymentsSelector } from 'redux/selectors';
-import { convertNumberToMoney, toCallbackQueryParams } from 'helpers';
+import { convertNumberStringToMoney, convertNumberToMoney, dateToStringDefault, toCallbackQueryParams } from 'helpers';
 import { createTransaction, getCustomerTransaction, getGatewayPaymentList } from 'redux/modules/payment-portal';
 import { RequestCreateTransactionModel } from 'interfaces/models/requestCreateTransactionModel';
 import { GetValidateAccessSelector } from 'redux/selectors/validate-access';
@@ -56,7 +56,8 @@ const PaymentPage: React.FC = () => {
   /// ----------------------------------------------------
   /// GET CUSTOMER TRANSACTION
   useEffect(() => {
-    dispatch(getCustomerTransaction(queryParams.transactionId));
+    // dispatch(getCustomerTransaction(queryParams.transactionId));
+    dispatch(getCustomerTransaction('589'));
   }, [queryParams])
 
   /// GET GATEWAY PAYMENT LIST
@@ -146,26 +147,78 @@ const PaymentPage: React.FC = () => {
     });
   }
 
+  const dataDetail = requestTransaction?.dataDetail.dataView;
+
+  const columns = [
+    {
+      title: 'Sản phẩm/Dịch vụ',
+      dataIndex: 'serviceName',
+      key: 'serviceName',
+    },
+    {
+      title: 'Số lượng',
+      dataIndex: 'count',
+      key: 'count',
+    },
+    {
+      title: 'Đơn giá',
+      dataIndex: 'price',
+      key: 'price',
+    },
+    {
+      title: 'Thành tiền',
+      dataIndex: 'amount',
+      key: 'amount',
+    },
+  ];
 
   // Render
   return (
     <div className="page-content">
-      <Card title="Thông tin thanh toán" bordered={false} style={{ width: 300 }}>
+      <Card title="Thông tin hóa đơn" bordered={false} style={{ width: 300 }}>
         <TextSpan label="Khách hàng:" value={requestTransaction?.customerName} />
-        <br />
-        <TextSpan label="Mã hóa đơn:" value={requestTransaction?.orderInfo} />
-        <br />
-        <TextSpan label="Ngày hóa đơn:" value={now.toLocaleDateString()} />
-        <br />
+        <Row>
+          <TextSpan label="Mã hóa đơn:" value={requestTransaction?.orderInfo} />
+          <TextSpan label="Ngày hóa đơn:" value={dateToStringDefault(now)} />
+        </Row>
         <TextSpan label="Sản phẩm/Dịch vụ:" value={requestTransaction?.serviceName} />
         <br />
         <TextSpan
           label="Tổng tiền thanh toán:"
-          value={convertNumberToMoney(
+          value={convertNumberStringToMoney(
             requestTransaction?.amount!,
             requestTransaction?.locale!,
             requestTransaction?.currency!)} />
         <br />
+      </Card>
+
+      <Card title="Chi tiết hóa đơn" bordered={false}>
+        {dataDetail.services?.length != 0 ? <Table dataSource={dataDetail.services} columns={columns} pagination={false} /> : null}
+        {dataDetail.discountCode ? <TextSpan label="Mã giảm giá:" value={dataDetail.discountCode} /> : null}
+        <br />
+        <TextSpan
+          label="Thành tiền:"
+          value={convertNumberToMoney(
+            requestTransaction.actualAmount(),
+            requestTransaction?.locale!,
+            requestTransaction?.currency!)} />
+        <br />
+        <TextSpan
+          label="Giảm giá:"
+          value={convertNumberStringToMoney(
+            dataDetail.discountAmount ?? '0',
+            requestTransaction?.locale!,
+            requestTransaction?.currency!)} />
+        <br />
+        <TextSpan
+          label="Tổng tiền thanh toán:"
+          value={convertNumberStringToMoney(
+            requestTransaction?.amount!,
+            requestTransaction?.locale!,
+            requestTransaction?.currency!)} />
+        <br />
+        <br />
+
       </Card>
 
       <Form

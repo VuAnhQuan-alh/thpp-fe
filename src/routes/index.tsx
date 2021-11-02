@@ -12,6 +12,6 @@ export default [
     exact: true,
     name: 'Payment',
     component: withErrorBoundary(PaymentPage),
-    isPrivate: true,
+    isPrivate: false,
   },
 ];

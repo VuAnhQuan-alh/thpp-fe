@@ -71,7 +71,7 @@ const ReturnTransactionPage: React.FC = () => {
                     </Button>,
                 ]}
             >
-                <div style={{ alignContent: "center", justifyItems: "center", textAlign: "center" }}>
+                {/* <div style={{ alignContent: "center", justifyItems: "center", textAlign: "center" }}>
                     <TextSpan label="Mã đơn hàng:" value={detailTransaction.orderInfo} />
                     <br />
                     <TextSpan label="Mã giao dịch:" value={detailTransaction.transactionNo} />
@@ -82,7 +82,7 @@ const ReturnTransactionPage: React.FC = () => {
                     <br />
                     <TextSpan label="Tổng tiền thanh toán:" value={detailTransaction.amount} />
                     <br />
-                </div>
+                </div> */}
             </Result>
         </div>
     );

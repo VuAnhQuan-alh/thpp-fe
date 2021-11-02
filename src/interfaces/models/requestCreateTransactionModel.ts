@@ -38,6 +38,23 @@ export class RequestCreateTransactionModel extends Object {
         this.windowColor = '#ef5459';
     }
 
+    // calculate actual amount
+    // actualAmount = amount + discountAmount
+    actualAmount() {
+        if (this.amount != undefined) {
+            var discountAmount = this.dataDetail?.dataView?.discountAmount?.length != 0 ?
+                this.dataDetail?.dataView?.discountAmount : '0';
+            var amountInt, discountInt;
+
+            try {
+                amountInt = parseInt(this.amount);
+                discountInt = parseInt(discountAmount);
+                return amountInt + discountInt;
+            } catch (e) { }
+        }
+        return 0;
+    }
+
     checkValidFieldsFromUser(): boolean {
         return (
             (this.windowType == PC_WINDOW_TYPE || this.windowType == MOBILE_WINDOW_TYPE)

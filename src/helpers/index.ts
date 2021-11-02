@@ -1,5 +1,6 @@
 import { EXP_MINUTE } from 'constants/configConstants';
 import { List } from 'interfaces';
+import { format } from 'date-fns'
 
 export const convertToFormSelect = (
   list: List<any> | any = [],
@@ -36,7 +37,9 @@ export const convertToFormSelect = (
   return [{ label: 'None', value: '' }, ...list];
 };
 
-export const convertNumberToMoney = (amount: string, locale: string = 'vi', currency: string = 'vnd') => {
+export const convertNumberStringToMoney = (amount: string, locale: string = 'vi', currency: string = 'vnd') => {
+  var amountValid = amount.length == 0 ? '0' : amount;
+
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currency,
@@ -44,7 +47,19 @@ export const convertNumberToMoney = (amount: string, locale: string = 'vi', curr
     // These options are needed to round to whole numbers if that's what you want.
     //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
     //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
-  }).format(parseInt(amount));
+  }).format(parseInt(amountValid));
+}
+
+
+export const convertNumberToMoney = (amount: number, locale: string = 'vi', currency: string = 'vnd') => {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+
+    // These options are needed to round to whole numbers if that's what you want.
+    //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+    //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+  }).format(amount);
 }
 
 export const queryParamsToJsonObject = () => {
@@ -101,4 +116,8 @@ export const toCallbackQueryParams = (vnp_ResponseCode: string, transactionId: s
   };
 
   return new URLSearchParams(params).toString();
+}
+
+export const dateToStringDefault = (today: Date) => {
+  return format(today, 'dd/MM/yyyy');
 }
