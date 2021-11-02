@@ -1,4 +1,3 @@
-import { ApiException } from './../constants/exception';
 import Cookies from 'universal-cookie';
 import { UNAUTHENTICATED } from 'constants/errorCode';
 class CookieServices {
