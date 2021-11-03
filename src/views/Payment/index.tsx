@@ -15,6 +15,7 @@ import { RequestCreateTransactionModel } from 'interfaces/models/requestCreateTr
 import { GetValidateAccessSelector } from 'redux/selectors/validate-access';
 import cookieServices, { CALLBACK_URL } from 'services/cookieServices';
 import { ERROR_CUSTOMER_CANCEL, mapErrorCodeToMsg } from 'constants/errorCode';
+import URL_LOGO from "../../styles/img/logo-truehope.png"
 
 const { confirm } = Modal;
 
@@ -56,8 +57,8 @@ const PaymentPage: React.FC = () => {
   /// ----------------------------------------------------
   /// GET CUSTOMER TRANSACTION
   useEffect(() => {
-    // dispatch(getCustomerTransaction(queryParams.transactionId));
-    dispatch(getCustomerTransaction('589'));
+    dispatch(getCustomerTransaction(queryParams.transactionId));
+    // dispatch(getCustomerTransaction('608'));
   }, [queryParams])
 
   /// GET GATEWAY PAYMENT LIST
@@ -169,56 +170,47 @@ const PaymentPage: React.FC = () => {
       title: 'Thành tiền',
       dataIndex: 'amount',
       key: 'amount',
+      align: "right"
     },
   ];
 
   // Render
   return (
-    <div className="page-content">
-      <Card title="Thông tin hóa đơn" bordered={false} style={{ width: 300 }}>
-        <TextSpan label="Khách hàng:" value={requestTransaction?.customerName} />
+    <div className="page-content" style={{ maxWidth: "992px", margin: "0px auto", padding: "0px 24px" }}>
+      <Row style={{ background: "white", padding: "16px 18px", marginBottom: "24px" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img src={URL_LOGO} alt="Logo True Hope" style={{ width: "100%", maxWidth: "230px" }} />
+          <div style={{ width: "3px", height: "36px", background: "#38B2A4", margin: "0px 12px" }}>&nbsp;</div>
+          <div style={{ color: "#38B2A4", fontWeight: "bold" }}>Thanh Toán</div>
+        </div>
+      </Row>
+      <Card bordered={false}>
+        <Row style={{ fontWeight: "bold", fontSize: "18px", color: "#38B2A4" }}>Thông tin hóa đơn</Row>
         <Row>
+          <TextSpan style={{ width: "100%", maxWidth: "520px" }} label="Khách hàng:" value={requestTransaction?.customerName} />
           <TextSpan label="Mã hóa đơn:" value={requestTransaction?.orderInfo} />
+        </Row>
+        <Row>
+          <TextSpan style={{ width: "100%", maxWidth: "520px" }} label="Sản phẩm/Dịch vụ:" value={requestTransaction?.serviceName} />
           <TextSpan label="Ngày hóa đơn:" value={dateToStringDefault(now)} />
         </Row>
-        <TextSpan label="Sản phẩm/Dịch vụ:" value={requestTransaction?.serviceName} />
-        <br />
-        <TextSpan
-          label="Tổng tiền thanh toán:"
-          value={convertNumberStringToMoney(
-            requestTransaction?.amount!,
-            requestTransaction?.locale!,
-            requestTransaction?.currency!)} />
-        <br />
       </Card>
 
-      <Card title="Chi tiết hóa đơn" bordered={false}>
-        {dataDetail.services?.length != 0 ? <Table dataSource={dataDetail.services} columns={columns} pagination={false} /> : null}
-        {dataDetail.discountCode ? <TextSpan label="Mã giảm giá:" value={dataDetail.discountCode} /> : null}
-        <br />
+      <Card bordered={false}>
+        <Row style={{ fontWeight: "bold", fontSize: "18px", color: "#38B2A4" }}>Chi tiết hóa đơn</Row>
+        {dataDetail.services?.length != 0 ?
+          // @ts-ignore
+          <Table dataSource={dataDetail.services} columns={columns} pagination={false} /> : null}
         <TextSpan
           label="Thành tiền:"
+          style={{ display: "flex", justifyContent: "end", alignItem: "center", marginTop: "12px", marginRight: "16px" }}
+          color="#38B2A4"
+          ml="8px"
           value={convertNumberToMoney(
             requestTransaction.actualAmount(),
             requestTransaction?.locale!,
-            requestTransaction?.currency!)} />
-        <br />
-        <TextSpan
-          label="Giảm giá:"
-          value={convertNumberStringToMoney(
-            dataDetail.discountAmount ?? '0',
-            requestTransaction?.locale!,
-            requestTransaction?.currency!)} />
-        <br />
-        <TextSpan
-          label="Tổng tiền thanh toán:"
-          value={convertNumberStringToMoney(
-            requestTransaction?.amount!,
-            requestTransaction?.locale!,
-            requestTransaction?.currency!)} />
-        <br />
-        <br />
-
+            requestTransaction?.currency!)}
+        />
       </Card>
 
       <Form
@@ -235,8 +227,8 @@ const PaymentPage: React.FC = () => {
             },
           ]}
         >
-          <Card title="Phương thức thanh toán" >
-
+          <Card>
+            <Row style={{ fontWeight: "bold", fontSize: "18px", color: "#38B2A4" }}>Phương thức thanh toán</Row>
             <Radio.Group onChange={onChange} value={gatewayCode}>
               <Space direction="vertical">
                 {radioPayments}
@@ -245,13 +237,40 @@ const PaymentPage: React.FC = () => {
 
           </Card>
         </Form.Item>
+        <Card bordered={false} style={{ display: "flex", flexDirection: "column", alignItems: "end" }}>
+          {dataDetail.discountCode ? <TextSpan style={{ display: "flex", justifyContent: "space-between", alignItems: "end" }} label="Mã giảm giá:" value={dataDetail.discountCode} /> : null}
+          <TextSpan
+            label="Thành tiền:"
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "end" }}
+            value={convertNumberToMoney(
+              requestTransaction.actualAmount(),
+              requestTransaction?.locale!,
+              requestTransaction?.currency!)} />
+          <TextSpan
+            label="Giảm giá:"
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "end" }}
+            value={convertNumberStringToMoney(
+              dataDetail.discountAmount ?? '0',
+              requestTransaction?.locale!,
+              requestTransaction?.currency!)} />
+          <TextSpan
+            label="Tổng tiền thanh toán:"
+            style={{ width: "100%", maxWidth: "320px", display: "flex", alignItems: "center" }}
+            fS="23px"
+            ml="15px"
+            color="#38B2A4"
+            value={convertNumberStringToMoney(
+              requestTransaction?.amount!,
+              requestTransaction?.locale!,
+              requestTransaction?.currency!)} />
+        </Card>
         <Form.Item>
           <div className="center" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
-            <Button type="primary" shape="round" size="large" className="ant-btn-red" onClick={cancelTransaction}>
+            <Button style={{ background: "#38B2A4", fontWeight: "bold", color: "white", borderRadius: "4px", border: "none" }} size="large" className="ant-btn-red" onClick={cancelTransaction}>
               Hủy
             </Button>
 
-            <Button type="primary" shape="round" size="large" htmlType="submit">
+            <Button style={{ background: "#38B2A4", fontWeight: "bold", border: "none", color: "#1E4A9D" }} size="large" htmlType="submit">
               Tiếp tục
             </Button>
 
